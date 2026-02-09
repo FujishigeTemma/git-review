@@ -1,0 +1,50 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    queries: "query.sql"
+    schema: "schema.sql"
+    gen:
+      go:
+        package: "db"
+        out: "internal/db"
+        overrides:
+          - column: "comments.id"
+            go_type:
+              import: "github.com/google/uuid"
+              package: "uuid"
+              type: "UUID"
+          - column: "comments.parent_id"
+            go_type:
+              import: "github.com/google/uuid"
+              package: "uuid"
+              type: "NullUUID"
+          - column: "comments.file"
+            go_type:
+              import: "github.com/guregu/null/v6"
+              package: "null"
+              type: "String"
+          - column: "comments.start_line"
+            go_type:
+              import: "github.com/guregu/null/v6"
+              package: "null"
+              type: "Int"
+          - column: "comments.end_line"
+            go_type:
+              import: "github.com/guregu/null/v6"
+              package: "null"
+              type: "Int"
+          - column: "comments.resolved_at"
+            go_type:
+              import: "github.com/guregu/null/v6"
+              package: "null"
+              type: "String"
+          - column: "comments.resolved_by"
+            go_type:
+              import: "github.com/guregu/null/v6"
+              package: "null"
+              type: "String"
+          - column: "reviewers.current_sha"
+            go_type:
+              import: "github.com/guregu/null/v6"
+              package: "null"
+              type: "String"

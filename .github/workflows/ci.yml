@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  cli-test:
+    name: CLI Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Unit tests
+        run: go test ./internal/... ./commands/...
+      - name: E2E tests
+        run: go test ./tests/...
+
+  extension-check:
+    name: VSCode Extension Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+          cache-dependency-path: vscode-extension/pnpm-lock.yaml
+      - name: Install dependencies
+        working-directory: vscode-extension
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        working-directory: vscode-extension
+        run: pnpm run lint
+      - name: Test
+        working-directory: vscode-extension
+        run: pnpm run test
+      - name: Build
+        working-directory: vscode-extension
+        run: pnpm run build

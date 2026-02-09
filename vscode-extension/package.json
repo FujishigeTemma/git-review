@@ -1,0 +1,231 @@
+{
+  "name": "git-review",
+  "displayName": "Git Review",
+  "description": "Commit review workflow for AI Agent collaboration. GitHub-like inline review comments on staged diffs.",
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.28.2",
+  "publisher": "FujishigeTemma",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FujishigeTemma/git-review"
+  },
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other",
+    "SCM Providers"
+  ],
+  "keywords": [
+    "git",
+    "review",
+    "ai",
+    "agent",
+    "code review"
+  ],
+  "activationEvents": [
+    "workspaceContains:.git"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gitReview.start",
+        "title": "Git Review: Start Review",
+        "icon": "$(play)"
+      },
+      {
+        "command": "gitReview.next",
+        "title": "Git Review: Next Commit",
+        "icon": "$(arrow-right)"
+      },
+      {
+        "command": "gitReview.addComment",
+        "title": "Git Review: Add Comment",
+        "icon": "$(comment)"
+      },
+      {
+        "command": "gitReview.addCommentFromSelection",
+        "title": "Git Review: Add Comment on Selection",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "gitReview.list",
+        "title": "Git Review: Show All Comments",
+        "icon": "$(list-ordered)"
+      },
+      {
+        "command": "gitReview.status",
+        "title": "Git Review: Show Status"
+      },
+      {
+        "command": "gitReview.finish",
+        "title": "Git Review: Finish Review",
+        "icon": "$(check)"
+      },
+      {
+        "command": "gitReview.abort",
+        "title": "Git Review: Abort Review",
+        "icon": "$(close)"
+      },
+      {
+        "command": "gitReview.jump",
+        "title": "Git Review: Jump to Commit",
+        "icon": "$(search)"
+      },
+      {
+        "command": "gitReview.resolveThread",
+        "title": "Resolve Thread",
+        "icon": "$(check)"
+      },
+      {
+        "command": "gitReview.unresolveThread",
+        "title": "Reopen Thread",
+        "icon": "$(issue-reopened)"
+      },
+      {
+        "command": "gitReview.createNote",
+        "title": "Add Comment"
+      },
+      {
+        "command": "gitReview.deleteNote",
+        "title": "Delete Comment",
+        "icon": "$(close)"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "gitReview.addCommentFromSelection",
+          "group": "git-review@1",
+          "when": "gitReview.active && editorHasSelection"
+        },
+        {
+          "command": "gitReview.addComment",
+          "group": "git-review@2",
+          "when": "gitReview.active"
+        }
+      ],
+      "comments/commentThread/title": [
+        {
+          "command": "gitReview.resolveThread",
+          "group": "inline",
+          "when": "commentController == git-review-comments && commentThread == reviewThread-unresolved"
+        },
+        {
+          "command": "gitReview.unresolveThread",
+          "group": "inline",
+          "when": "commentController == git-review-comments && commentThread == reviewThread-resolved"
+        }
+      ],
+      "comments/commentThread/context": [
+        {
+          "command": "gitReview.createNote",
+          "group": "inline",
+          "when": "commentController == git-review-comments"
+        }
+      ],
+      "comments/comment/title": [
+        {
+          "command": "gitReview.deleteNote",
+          "group": "inline",
+          "when": "comment == reviewNote || comment == reviewReply"
+        }
+      ],
+      "comments/comment/context": [
+        {
+          "command": "gitReview.deleteNote",
+          "when": "comment == reviewNote || comment == reviewReply"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "gitReview.start"
+        },
+        {
+          "command": "gitReview.next",
+          "when": "gitReview.active"
+        },
+        {
+          "command": "gitReview.addComment",
+          "when": "gitReview.active"
+        },
+        {
+          "command": "gitReview.addCommentFromSelection",
+          "when": "false"
+        },
+        {
+          "command": "gitReview.list"
+        },
+        {
+          "command": "gitReview.status",
+          "when": "gitReview.active"
+        },
+        {
+          "command": "gitReview.finish",
+          "when": "gitReview.active"
+        },
+        {
+          "command": "gitReview.abort",
+          "when": "gitReview.active"
+        },
+        {
+          "command": "gitReview.jump",
+          "when": "gitReview.active"
+        },
+        {
+          "command": "gitReview.resolveThread",
+          "when": "false"
+        },
+        {
+          "command": "gitReview.unresolveThread",
+          "when": "false"
+        },
+        {
+          "command": "gitReview.createNote",
+          "when": "false"
+        },
+        {
+          "command": "gitReview.deleteNote",
+          "when": "false"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "workbench.action.submitComment",
+        "key": "shift+enter",
+        "mac": "shift+enter",
+        "when": "commentEditorFocused"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite build --watch",
+    "lint": "oxlint --fix --type-aware --type-check src/",
+    "format": "oxfmt src/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "pnpm run lint && pnpm run format && pnpm run test",
+    "package": "vsce package --no-dependencies",
+    "release": "vsce publish --no-dependencies",
+    "vscode:prepublish": "pnpm run build"
+  },
+  "dependencies": {
+    "execa": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript/native-preview": "*",
+    "@vscode/vsce": "^3.0.0",
+    "oxfmt": "^0.28.0",
+    "oxlint": "^1.0.0",
+    "oxlint-tsgolint": "^0.12.2",
+    "typescript": "^5.3.0",
+    "vite": "^6.0.0",
+    "vitest": "^3.0.0"
+  }
+}
